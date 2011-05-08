@@ -1,0 +1,65 @@
+\documentclass[12pt,a4paper,oneside]{book}
+
+\usepackage[russian]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+\usepackage[usenames, dvipsnames]{color}
+\usepackage[usenames, dvipsnames]{xcolor}
+
+\usepackage{listingsutf8}
+\lstloadlanguages{C, make, bash}
+
+\lstset{escapechar=`,
+	language=C, 
+	tabsize=2, 
+	columns=fullflexible, 
+	basicstyle=\ttfamily, 
+	keywordstyle=\color{blue}, 
+	commentstyle=\itshape\color{brown},
+%	identifierstyle=\ttfamily, 
+	stringstyle=\mdseries\color{OliveGreen}, 
+	showstringspaces=false, 
+	numbers=left, 
+	numberstyle=\tiny, 
+	breaklines=true, 
+	inputencoding=utf8/latin1, 
+	morekeywords={u_short, u_char, u_long, in_addr}
+	}
+
+\usepackage{verbatim}
+\usepackage{moreverb}
+
+\usepackage{html}   %  *always* load this for LaTeX2HTML
+\begin{htmlonly}
+\providecommand{\lstinputlisting}[2][]{\verbatiminput{#2}}
+\end{htmlonly}
+
+\bibliographystyle{unsrt}
+
+\begin{document}
+
+% Формируем титульную страницу
+\title{Системное программное обеспечение локальных компьютерных сетей}
+\author{Пынькин Денис Александрович}
+\date{2011}
+\maketitle
+
+\renewcommand{\contentsname}{Оглавление}
+
+\tableofcontents
+\setcounter{tocdepth}{2}
+\newpage
+
+
+\input{intro}
+%Основные транспортные протоколы стека TCP/IP
+%добавить в последнюю очередь - дублирует ВКСИС
+%\input{tcpip}
+\input{sockets/sockets}
+\input{spodesign}
+\input{clientserver}
+
+\bibliography{biblio}
+
+\end{document}
