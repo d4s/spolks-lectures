@@ -1,4 +1,4 @@
-TEXFILES=clientserver.tex sockets.tex  spodesign.tex  tcpip.tex
+TEXFILES=clientserver/clientserver.tex sockets/sockets.tex  spodesign/spodesign.tex  tcpip/tcpip.tex
 
 %.html: %.tex $(TEXFILES)
 	latex2html -rootdir HTML -split 4 -html_version 4.0,latin1,unicode $<
@@ -17,4 +17,6 @@ TEXFILES=clientserver.tex sockets.tex  spodesign.tex  tcpip.tex
 
 all: main.pdf
 
+bib: main.aux
+	bibtex8 -s main.aux
 
