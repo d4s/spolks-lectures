@@ -121,7 +121,7 @@ struct sockaddr{
 
 Для приложений,  которые используют исключительно TCP/IP,  для определения типа адреса достаточно использовать структуру:
 \begin{lstlisting}[language=C]
-struct sockaddr{
+struct sockaddr_in{
 	u_char sin_len;
 	u_short sin_family;
 	u_short sin_port;
@@ -129,6 +129,7 @@ struct sockaddr{
 	char sin_zero[8];
 }
 \end{lstlisting}
+
 \begin{itemize}
 	\item sin\_len -- общая длина (только с BSD 4.4 );
 	\item sin\_family -- тип адреса;
@@ -148,6 +149,20 @@ struct sockaddr{
 Для каждого адресного семейства каждый тип сокета может поддерживаться одним или несколькими протоколами. В частности, в адресном семействе AF\_INET для сокетов типа SOCK\_STREAM подразумеваемым является протокол с именем IPPROTO\_TCP, а для типа SOCK\_DGRAM --- IPPROTO\_UDP; посредством неструктурированных сокетов (SOCK\_RAW) можно воспользоваться протоколом ICMP, задав имя IPPROTO\_ICMP, и т.д. 
 
 \section{API сокетов}
+\subsection{Сетевой и хостовый порядок байт}
+
+Преобразование значений типов {\tt uint16\_t} и {\tt uint32\_t} из хостового порядка 
+байт в сетевой выполняется посредством функций {\tt htons} и {\tt htonl},
+а функции {\tt ntohs} и {\tt ntohl} осуществляют обратную операцию.
+
+\begin{lstlisting}[language=C, caption="Описание функций преобразования целочисленных значений из хостового порядка байт в сетевой и наоборот."]
+#include <arpa/inet.h>
+uint32_t htonl (uint32_t hostlong);
+uint16_t htons (uint16_t hostshort);
+uint32_t ntohl (uint32_t netlong);
+uint16_t ntohs (uint16_t netshort);
+\end{lstlisting}
+
 \subsection{Получение имен хостов}
 
 Структура hostent определена в файле {\tt netdb.h}:
@@ -163,14 +178,37 @@ struct hostent {
 	}
 #define h_addr h_addr_list[0] /* for backward compatibility */
 \end{lstlisting}
+
 \begin{itemize}
 \item h\_name -- официальное имя хоста;
 \item h\_aliases -- массив псевдонимов хоста, завершающийся указателем на NULL;
 \item h\_addrtype -- тип адреса (на данный момент {\tt AF\_INET} или {\tt AF\_INET6};
 \item h\_length -- длина адреса в байтах;
 \item h\_addr\_list -- массив указателей на сетевые адреса хоста, завершающийся указателем на NULL;
-\item 
 \end{itemize}
+
+Доступ к сетевой базе имен хостов осуществляется с помощью вызовов:
+\begin{lstlisting}[language=C]
+#include <netdb.h>
+void sethostent (int stayopen);
+struct hostent *gethostent (void);
+void endhostent (void);
+
+struct hostent *gethostbyname(const char *name);
+
+#include <sys/socket.h>       /* for AF_INET */
+struct hostent *gethostbyaddr(const void *addr,
+				socklen_t len, int type);
+\end{lstlisting}
+
+\begin{itemize}
+	\item {\tt sethostent} -- устанавливает соединение с базой, остающееся открытым после вызова {\tt gethostent}, если значение аргумента {\tt stayopen} отлично от нуля.
+	\item {\tt gethostent} -- последовательно читает элементы базы, возвращая результат в структуре типа {\tt hostent}.
+	\item {\tt endhostent} -- закрывает соединение с базой.
+	\item {\tt gethostbyname} -- возвращает результат в структуре типа {\tt hostent} для заданного имени хоста.
+	\item {\tt gethostbyaddr} -- возвращает результат в структуре типа {\tt hostent} для заданного в структуре {\tt addr}.	
+\end{itemize}
+
 
 \lstinputlisting[caption="Получение списка хостов из локальной БД"]{sockets/src/hostname.c}
 
@@ -201,9 +239,43 @@ struct hostent {
   127 0 0 1
 \end{verbatim}
 
-К базе возможен и произвольный доступ по ключам --- именам и адресам хостов с помощью функций {\tt gethostbyname} и {\tt gethostbyaddr}, однако они считаются устаревшими и из новой версии стандарта POSIX могут быть исключены. Вместо них предлагается использовать функции {\tt getnameinfo} и {\tt getaddrinfo()}.
+Произвольный доступ по ключам --- именам и адресам хостов с помощью функций {\tt gethostbyname} и {\tt gethostbyaddr} считаются устаревшим и эти функции могут быть исключены из новой версии стандарта POSIX. Вместо них необходимо использовать функции {\tt getnameinfo} и {\tt getaddrinfo()}.
 
-\lstinputlisting[caption="Доступ к произвольным именам хостов с помощью getaddrinfo"]{sockets/src/getaddrinfo.c}
+\begin{lstlisting}[language=C]
+#include <sys/socket.h>
+#include <netdb.h>
+
+void freeaddrinfo (struct addrinfo *ai);
+
+int getaddrinfo 
+    (const char *restrict nodename, 
+	const char *restrict servname,
+	const struct addrinfo *restrict hints,
+	struct addrinfo **restrict res);
+
+int getnameinfo 
+	(const struct sockaddr *restrict sa, 
+	socklen_t salen, char *restrict node, 
+	socklen_t nodelen, char *restrict service,
+	socklen_t servicelen, int flags);
+\end{lstlisting}
+
+Аргумент {\tt hints} позволяет передать дополнительную информацию об опрашиваемом сервисе - адресное семейство, тип сокета, протокол, флаги. 
+Согласно стандарту, структура {\tt addrinfo}, описанная в заголовочном файле {\tt <netdb.h>}, должна содержать по крайней мере следующие поля. 
+
+\begin{verbatim}
+int              ai_flags; /* Входные флаги */
+int              ai_family; /* Адресное семейство сокета */
+int              ai_socktype; /* Тип сокета */
+int              ai_protocol; /* Протокол сокета */
+socklen_t        ai_addrlen; /* Длина адреса сокета */
+struct sockaddr *ai_addr; /* Адрес сокета */
+char            *ai_canonname; /* Официальное имя узла сети */
+struct addrinfo *ai_next; /* Указатель на следующий элемент списка */
+\end{verbatim}
+
+\lstinputlisting[caption=Доступ к произвольным именам хостов с помощью getaddrinfo]{sockets/src/getaddrinfo.c}
+
 Результат работы программы:
 \begin{verbatim}
 Результаты для сервиса http
@@ -221,4 +293,236 @@ struct hostent {
 Официальное имя хоста: (null)
 \end{verbatim}
 
+Для преобразования IP-адресов из текстового представления в числовое и наоборот можно использовать функции:
+\begin{lstlisting}[language=C]
+#include <arpa/inet.h>
+in_addr_t inet_addr (const char *cp);
+char *inet_ntoa (struct in_addr in);
+int inet_pton (int af, const char 
+     *restrict src, void *restrict dst);
+const char *inet_ntop (int af, const void 
+     *restrict src, char *restrict dst, 
+     socklen_t size);
+\end{lstlisting}
+
+\subsection{Доступ к базе данных сетевых протоколов}
+Локальная база данных сетевых протоколов располагается по адресу {\tt /etc/protocols}, а содержимое этого файла выглядит следующим образом:
+\begin{verbatim}
+ip	0	IP		# internet protocol, pseudo protocol number
+icmp	1	ICMP		# internet control message protocol
+igmp	2	IGMP		# internet group management protocol
+tcp	6	TCP		# transmission control protocol
+udp	17	UDP		# user datagram protocol
+\end{verbatim}
+
+Доступ к базе данных сетевых протоколов осуществляется с помощью следующих вызовов:
+\begin{lstlisting}[language=C]
+#include <netdb.h>
+void setprotoent (int stayopen);
+struct protoent *getprotoent (void);
+struct protoent *getprotobyname 
+            (const char *name);
+struct protoent *getprotobynumber
+			(int proto);
+void endprotoent (void);
+\end{lstlisting}
+
+Структура {\tt protoent} содержит по крайней мере следующие поля:
+\begin{itemize}
+	\item char  *p\_name -- официальное имя протокола;
+	\item char **p\_aliases -- массив указателей на альтернативные имена протокола, завершаемый пустым указателем;
+	\item int    p\_proto -- номер протокола.
+\end{itemize}
+
+\lstinputlisting[caption=Пример программы для получения списка протоколов]{sockets/src/protoname.c}
+
+Результат работы программы:
+\begin{verbatim}
+Официальное имя протокола: ip
+Альтернативные имена:
+  IP
+Номер протокола: 0
+
+Официальное имя протокола: icmp
+Альтернативные имена:
+  ICMP
+Номер протокола: 1
+
+Официальное имя протокола: igmp
+Альтернативные имена:
+  IGMP
+Номер протокола: 2
+\end{verbatim}
+
+
+\subsection{Доступ к базе данных сетевых сервисов}
+Локально база данных сетевых сервисов располагается по адресу {\tt /etc/services}, а содержимое этого файла выглядит следующим образом:
+\begin{verbatim}
+# service-name  port/protocol  [aliases \ldots]   [# comment]
+domain		53/tcp				# Domain Name Server
+domain		53/udp				# Domain Name Server
+bootps		67/tcp				# Bootstrap Protocol Server
+bootps		67/udp				# Bootstrap Protocol Server
+bootpc		68/tcp				# Bootstrap Protocol Client
+bootpc		68/udp				# Bootstrap Protocol Client
+\end{verbatim}
+
+Доступ к базе данных сетевых сервисов осуществляется с помощью следующих вызовов:
+\begin{lstlisting}[language=C]
+#include <netdb.h>
+void setservent (int stayopen);
+struct servent *getservent (void);
+struct servent *getservbyname 
+     (const char *name, const char *proto);
+struct servent *getservbyport 
+     (int port, const char *proto);
+void endservent (void);
+\end{lstlisting}
+
+Структура {\tt servent} содержит следующие поля:
+\begin{itemize}
+	\item char  *s\_name -- Официальное имя сервиса
+	\item char **s\_aliases -- Массив указателей на альтернативные имена сервиса, завершаемый пустым указателем
+	\item int    s\_port -- Номер порта, соответствующий сервису (в сетевом порядке байт)
+	\item char  *s\_proto -- Имя протокола для взаимодействия с сервисом
+\end{itemize}
+
+\lstinputlisting[caption=Пример программы для получения списка сервисов]{sockets/src/servname.c}
+
+Результат работы программы:
+\begin{verbatim}
+Официальное имя сервиса: http
+Альтернативные имена:
+  www
+  www-http
+Номер порта: 80
+Имя протокола: tcp
+
+Официальное имя сервиса: http
+Альтернативные имена:
+  www
+  www-http
+Номер порта: 80
+Имя протокола: udp
+
+Официальное имя сервиса: kerberos
+Альтернативные имена:
+  kerberos5
+  krb5
+Номер порта: 88
+Имя протокола: tcp
+\end{verbatim}
+
+\subsection{Функции для работы с сокетами}
+В этом разделе кратко описан минимальный набор системных вызовов, входящий в стандарт POSIX \cite{man-pages-01} \cite{man-pages-02}.
+
+\subsubsection{socket}
+{\tt socket} --- создать оконечную точку коммуникации   
+
+\begin{lstlisting}[language=C]
+#include <sys/types.h> 
+#include <sys/socket.h> 
+int socket(int domain, int type, int protocol);   
+\end{lstlisting}
+
+Вызов {\tt socket} создает оконечную точку для коммуникации и возвращает её дескриптор. 
+
+Параметр {\tt domain} задает ``домен'' коммуникации; выбирает набор протоколов, которые будут использоваться для коммуникации.
+
+Такие наборы описаны в <sys/socket.h>. Примеры форматов: 
+
+\begin{itemize}
+\item PF\_UNIX,PF\_LOCAL -- Локальная коммуникация
+\item PF\_INET --	IPv4, протоколы Интернет
+\item PF\_INET6 -- IPv6, протоколы Интернет
+\item PF\_IPX -- IPX -- протоколы Novell
+\item PF\_NETLINK -- Устройство для общения пользователя с ядром
+\item PF\_X25 -- Протокол ITU-T X.25 / ISO-8208
+\item PF\_AX25 -- Протокол AX.25, любительское радио 
+\item PF\_APPLETALK -- Appletalk
+\item PF\_PACKET -- Низкоуровневый пакетный интерфейс
+\end{itemize}
+
+Сокет имеет тип {\tt type}, задающий семантику коммуникации. Стандарт POSIX определяет следующие типы:
+
+\begin{itemize}
+	\item SOCK\_STREAM 
+	\item SOCK\_SEQPACKET
+	\item SOCK\_DGRAM
+	\item SOCK\_RAW
+\end{itemize}
+
+
+Параметр {\tt protocol} задает конкретный протокол, который используется на сокете. 
+Обычно существует только один протокол, обеспечивающий конкретный тип сокета в 
+заданном наборе протоколов. Однако, возможно существование нескольких таких 
+протоколов -- тогда и используется этот параметр. 
+Номер протокола зависит от используемого домена коммуникации.
+
+ В случае ошибки возвращается -1; в противном случае возвращается дескриптор, ссылающийся на сокет. 
+
+\subsubsection{connect}
+{\tt connect} --- инициирует соединение на сокете.
+
+\begin{lstlisting}[language=C]
+#include <sys/types.h> 
+#include <sys/socket.h> 
+int connect(int sockfd, const struct sockaddr *serv_addr, socklen_t addrlen); 
+\end{lstlisting}
+
+Файловый дескриптор {\tt sockfd} должен ссылаться на сокет. 
+Если сокет имеет тип {\tt SOCK\_DGRAM}, значит, адрес {\tt serv\_addr} является 
+адресом по умолчанию, куда посылаются датаграммы, и единственным адресом, откуда 
+они принимаются. Если сокет имеет тип {\tt SOCK\_STREAM} или {\tt SOCK\_SEQPACKET},
+то данный системный вызов попытается установить соединение с другим сокетом.
+Другой сокет задан параметром {\tt serv\_addr}, являющийся адресом длиной 
+{\tt addrelen} в пространстве коммуникации сокета. Каждое пространство коммуникации 
+интерпретирует параметр {\tt serv\_addr} по-своему.
+
+Обычно сокеты с протоколами, основанными на соединении, могут устанавливать 
+соединение только один раз; сокеты с протоколами без соединения могут 
+использовать {\tt connect} многократно, чтобы изменить адрес назначения. 
+Сокеты без поддержки соединения могут прекратить связь с другим сокетом, 
+установив член {\tt sa\_family} структуры sockaddr в {\tt AF\_UNSPEC}.
+
+Если соединение или привязка прошла успешно, возвращается нуль. 
+При ошибке возвращается -1, а {\tt errno} устанавливается должным образом.
+
+\subsubsection{listen}
+{\tt listen} -- слушать соединения на сокете (перевести сокет в пассивный режим).
+
+\begin{lstlisting}[language=C]
+#include <sys/socket.h> 
+int listen(int s, int backlog);   
+\end{lstlisting}
+
+Для того, чтобы принимать соединения, сначала нужно создать сокет с 
+помощью {\tt socket}, затем выразить готовность принимать входящие соединения 
+и задать размер очереди с помощью {\tt listen}, а затем вызывать {\tt accept} 
+по мере появления новых соединений. Системный вызов {\tt listen} применим 
+только к сокетам типа {\tt SOCK\_STREAM} или {\tt SOCK\_SEQPACKET}.
+
+Параметр {\tt backlog} задает максимальную длину, до которой может расти очередь 
+ожидающих соединений. Если приходит запрос на соединение, а очередь полна,
+то клиент получит ошибку {\tt ECONNREFUSED} или, если соответствующий
+протокол поддерживает повторную передачу, запрос может быть игнорирован,
+чтобы попытаться ответить на повторный запрос.   
+
+В случае успеха возвращается нуль. 
+При ошибке возвращается -1, а {\tt errno} устанавливается должным образом.
+
+\subsubsection{accept}
+
+\begin{lstlisting}[language=C]
+
+\end{lstlisting}
+
+
+\subsubsection{bind}
+\subsubsection{send}
+\subsubsection{recv}
+\subsubsection{close}
+\subsubsection{shutdown}
+\subsubsection{setsockopt}
+\subsubsection{getsockopt}
 
