@@ -22,7 +22,7 @@
 #%.pdf: %.ps
 #	ps2pdf $<
 
-all: 01.intro.pdf
+all: 01-intro.pdf
 
 bib: main.aux
 	bibtex8 -s main.aux
