@@ -393,14 +393,38 @@ e-mail: denis.pynkin@bsuir.by\\
 	Можно взаимодействовать с сервером или клиентом с помощью программ {\tt telnet} или {\tt netcat}.
 \end{frame}
 
-\begin{frame}[fragile]{Пример: POP3}
-\tiny
-	{\bfseries telnet pop.mail.ru 110}\\
+\begin{frame}{Пример: SMTP}
+\scriptsize
+	{\bfseries telnet smtp.mail.ru 25}\\
 	\color{gray}
-	Trying 94.100.177.6...\\
-	Connected to pop.mail.ru.\\
+	Trying 94.100.177.1...\\
+	Connected to smtp.mail.ru.\\
 	Escape character is '\^]'.\\
 	\color{black}
+	S: 220 smtp3.mail.ru ESMTP ready\\
+	{\bfseries C: HELO my.server.org}\\
+	S: 250 smtp3.mail.ru\\
+	{\bfseries C: MAIL FROM: test\_testerson@mail.ru}\\
+	S: 250 2.0.0 OK\\
+	{\bfseries C: RCPT TO: denis.pynkin@bsuir.by}\\
+	S: 250 Accepted\\
+	{\bfseries C: DATA}\\
+	S: 354 Enter message,  ending with "." on a line by itself\\
+	{\bfseries C: from: test\_testerson@mail.ru\\
+	C: to: denis.pynkin@bsuir.by\\
+	C: subject: test\\
+	C: Test message\\
+	C: .}\\
+	S: 250 OK id=1PmNuu-0006QX-00\\
+	{\bfseries C: QUIT}
+\normalsize
+\end{frame}
+
+
+
+\begin{frame}[fragile]{Пример: POP3}
+\scriptsize
+	{\bfseries telnet pop.mail.ru 110}\\
 	S: +OK\\
 	{\bfseries C: USER test\_testerson@mail.ru}\\
 	S: +OK\\
@@ -424,8 +448,76 @@ e-mail: denis.pynkin@bsuir.by\\
 \end{frame}
 
 
-\begin{frame}{}
+\begin{frame}{Пример: FTP}
+Управляющее соединение FTP:\\
+\medskip
+\tiny
+	{\bfseries telnet ftp.mgts.by 21}\\
+	S: 220 Welcome to ByFly FTP service.\\
+	{\bfseries C: USER anonymous}\\
+	S: 331 Please specify the password.\\
+	{\bfseries C: PASS test\_testerson@mail.ru}\\
+	S: 230 Login successful.\\
+	{\bfseries C: PASV}\\
+	S: 227 Entering Passive Mode (86, 57, 151, 3, 47, 76)\\
+	\% ip=86.57.151.3 port=47*256+76=12108\\
+	{\bfseries C: LIST}\\
+	\%\%\%\%\% Здесь устанавливается информационное соединение №1 \%\%\%\%\%\\
+	S: 150 Here comes the directory listing.\\
+	S: 226 Directory send OK.\\
+	{\bfseries C: PASV}\\
+	S: 227 Entering Passive Mode (86, 57, 151, 3, 191, 44)\\
+	{\bfseries C: RETR README}\\
+	\%\%\%\%\% Здесь устанавливается информационное соединение №2 \%\%\%\%\%\\
+	S: 150 Opening BINARY mode data connection for README (197 bytes).\\
+	S: 226 File send OK.\\
+	{\bfseries C: QUIT}\\
+	S: 221 Goodbye.\\
+
+\normalsize
 \end{frame}
+
+\begin{frame}{Пример: FTP}
+Информационное соединение №1:\\
+\medskip
+\scriptsize
+{\bfseries telnet ftp.mgts.by 12108}\\
+\begin{verbatim}
+-rw-r----r----    1 0    0       0 Apr 19  2010 2ban\_me.html\\
+-rw-r----r----    1 0    0       197 Jan 27  2010 README\\
+lrwxrwxrwx    1 0    0       18 Jan 27  2010 backports.org -> pub/backports.org/\\
+drwxr-xr-x    2 0    0       23 May 20  2010 blog\\
+drwxr-xr-x   10 0    0       4096 Feb 07 08:48 byfly\\
+\end{verbatim}
+\normalsize
+\end{frame}
+
+\begin{frame}{Пример: FTP}
+Информационное соединение №2:\\
+\medskip
+\scriptsize
+{\bfseries telnet ftp.mgts.by 48940}\\
+\begin{verbatim}
+Welcome to ByFly public archive (ftp.byfly.by)\\
+	located at MGTS,  Minsk,  Belarus\\
+	sponsored by Beltelecom (www.beltelecom.by)\\
+	2 x Intel(R) Xeon(R) CPU X3210  @ 2.13GHz\\
+	8 Gb RAM,  6 TB SATA Storage\\
+\end{verbatim}
+\normalsize
+\end{frame}
+
+
+\begin{frame}{}
+\Huge
+\begin{center}
+	Спасибо за внимание!
+	\bigskip
+	Вопросы?
+\end{center}
+\normalsize
+\end{frame}
+
 
 \end{document}
 %Конец файла
