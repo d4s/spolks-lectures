@@ -22,11 +22,11 @@
 #%.pdf: %.ps
 #	ps2pdf $<
 
-all: 01-intro.pdf 02-unixway_design.pdf
+all: 01-intro.pdf 02-unixway.pdf 03-high_level_proto_design.pdf
 
 bib: main.aux
 	bibtex8 -s main.aux
 
 clean:
-	@rm -f *.aux *.bbl *.blg *.log *.out *.pdf *.toc *.nav *.snm
+	@rm -f *.aux *.bbl *.blg *.log *.out *.pdf *.toc *.nav *.snm *.vrb
 
