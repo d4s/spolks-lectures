@@ -17,12 +17,12 @@
 %.ps: %.dvi
 	dvips -j0 -Ppdf -o $@ $<
 
-%.pdf: %.tex common.tex
+%.pdf: %.tex common.tex titlepage.tex lastpage.tex
 	pdflatex $<
 #%.pdf: %.ps
 #	ps2pdf $<
 
-all: 01-intro.pdf 02-unixway.pdf 03-high_level_proto_design.pdf
+all: 01-intro.pdf 02-unixway.pdf 03-stack-tcp_ip.pdf
 
 bib: main.aux
 	bibtex8 -s main.aux
