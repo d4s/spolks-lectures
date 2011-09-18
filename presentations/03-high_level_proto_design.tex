@@ -1,0 +1,250 @@
+% СПО ЛКС - проектирование ПО
+% Пынькин Д.А. (с) 2011
+\input{common}
+
+\subtitle{Форматы данных \\и проектирование пользовательских протоколов}
+
+%
+% Далее начинается сама презентация
+%
+\begin{document}
+\begin{frame}
+\titlepage
+\begin{center}
+e-mail: denis.pynkin@bsuir.by\\
+\end{center}
+\begin{center}
+{\bfseries http://goo.gl/32cTB}
+
+{\tiny СЧАСТЬЕ ДЛЯ ВСЕХ, ДАРОМ, И ПУСТЬ НИКТО НЕ УЙДЕТ ОБИЖЕННЫЙ!\\
+(c)Стругацкие, Пикник на обочине}
+\end{center}
+\end{frame}
+
+\section{Представление данных}
+
+\begin{frame}{Представление данных}
+	\begin{center}
+	{\Large\bfseries Ясные протоколы лежат в основе хорошей практики.}
+	\end{center}
+\end{frame}
+
+\begin{frame}{Схожесть задач}
+	\begin{itemize}
+		\item Проектирование форматов файлов для сохранения данных приложений в постоянном хранилище данных.
+		\item Проектирование протоколов прикладного уровня для передачи (в том числе и через сеть) данных и команд между взаимодействующими программами.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Важное при проектировании прикладных протоколов}
+	\begin{itemize}
+		\item способность к взаимодействию; 
+			\pause
+		\item прозрачность;
+			\pause
+		\item расширяемость;
+			\pause
+		\item экономичность транзакций.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Типы данных}
+	С машинной точки зрения удобно хранить данные сложной структуры в бинарном виде -- все поля имеют характерный для конкретной машины формат и указатели в виде адресов.
+
+	\pause
+	{\itshape Однако такие формы представления не подходят для хранения и передачи.}
+\end{frame}
+
+\begin{frame}{Сериализация данных}
+	Часто ЯП и/или платформа предоставляет средства для сериализации данных и восстановления исходной структуры из байтового потока.
+\end{frame}
+
+\begin{frame}{Минусы сериализации данных при использовании в протоколах}
+	\begin{itemize}
+		\item проблемы взаимодействия между машинами с разной архитектурой;
+			\pause
+		\item непрозрачность для других средств;
+			\pause
+		\item для сетевых протоколов часто целесообразно представлять структуру данных не в виде одного большого двоичного объекта,  а в виде последовательности транзакций или сообщений,  которые могут быть отклонены принимающей машиной.
+	\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Когда выгодно использовать бинарное представление?}
+	\begin{itemize}
+		\item Необходимость передачи больших блоков данных и разработчик формата действительно позаботился о достижении максимальной плотности полезной информации в потоке.
+
+			Пример: мультимедиа форматы.
+			\pause
+		\item Существует жесткое ограничение времени и/или инструкций,  необходимых для интерпретации данных.
+
+			Пример: протоколы сетевого уровня.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Текстовое представление данных}
+	Дуг Макилрой (изобретатель pipes):
+	\begin{itemize}
+		\item Будьте готовы к тому,  что вывод каждой программы станет вводом другой,  еще неизвестной программы. 
+			\pause
+		\item Не загромождайте вывод посторонней информацией. 
+			\pause
+		\item Избегайте строгих табличных или двоичных форматов ввода. 
+			\pause
+		\item Не настаивайте на интерактивном вводе.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Текстовые потоки -- универсальный формат передачи данных}
+	Они просты для чтения,  записи и редактирования человеком без использования специальных инструментов.
+	\pause
+
+	{\itshape Текстовые форматы -- прозрачны.}
+\end{frame}
+
+\begin{frame}{Текстовые потоки -- универсальный формат передачи данных}
+	Если необходима производительность,  то можно внедрить сжатие текстового потока на уровне выше или ниже.
+
+	Часто такая конструкция является более производительной,  чем бинарное представление.
+\end{frame}
+
+\begin{frame}{Текстовые потоки -- универсальный формат передачи данных}
+	Упрощается интерпретация и анализ взаимодействия приложений,  а также написание тестовых программ.
+\end{frame}
+
+\begin{frame}{Текстовые потоки -- универсальный формат передачи данных}
+	Серверные процессы часто запускаются с помощью суперсерверов подобных inetd/xinetd,  так что сервер получает команды на стандартный ввод и отправляет ответ на стандартный вывод.
+\end{frame}
+
+\begin{frame}{Текстовые потоки -- универсальный формат передачи данных}
+	Можно взаимодействовать с сервером или клиентом с помощью программ {\tt telnet} или {\tt netcat}.
+\end{frame}
+
+\begin{frame}{Пример: SMTP}
+\scriptsize
+	{\bfseries telnet smtp.mail.ru 25}\\
+	\color{gray}
+	Trying 94.100.177.1...\\
+	Connected to smtp.mail.ru.\\
+	Escape character is '\^]'.\\
+	\color{black}
+	S: 220 smtp3.mail.ru ESMTP ready\\
+	{\bfseries C: HELO my.server.org}\\
+	S: 250 smtp3.mail.ru\\
+	{\bfseries C: MAIL FROM: test\_testerson@mail.ru}\\
+	S: 250 2.0.0 OK\\
+	{\bfseries C: RCPT TO: denis.pynkin@bsuir.by}\\
+	S: 250 Accepted\\
+	{\bfseries C: DATA}\\
+	S: 354 Enter message,  ending with "." on a line by itself\\
+	{\bfseries C: from: test\_testerson@mail.ru\\
+	C: to: denis.pynkin@bsuir.by\\
+	C: subject: test\\
+	C: Test message\\
+	C: .}\\
+	S: 250 OK id=1PmNuu-0006QX-00\\
+	{\bfseries C: QUIT}
+\normalsize
+\end{frame}
+
+
+
+\begin{frame}[fragile]{Пример: POP3}
+\scriptsize
+	{\bfseries telnet pop.mail.ru 110}\\
+	S: +OK\\
+	{\bfseries C: USER test\_testerson@mail.ru}\\
+	S: +OK\\
+	{\bfseries C: PASS test01}\\
+	S: +OK Welcome!\\
+	{\bfseries C: STAT}\\
+	S: +OK 2 95232\\
+	{\bfseries C: LIST}\\
+	S: +OK 2 messages (95232 octets)\\
+	S: 1 40269\\
+	S: 2 54853\\
+	S: .\\
+	{\bfseries C: RETR 1}\\
+	S: +OK 40269 octets\\
+	{\color{gray}  Here is the message}\\
+	{\bfseries C: DELE 1}\\
+	S: +OK message 1 deleted\\
+	{\bfseries C: QUIT}\\
+	S: +OK POP3 server at mail.ru signing off\\
+\normalsize
+\end{frame}
+
+
+\begin{frame}{Пример: FTP}
+Управляющее соединение FTP:\\
+\medskip
+\tiny
+	{\bfseries telnet ftp.mgts.by 21}\\
+	S: 220 Welcome to ByFly FTP service.\\
+	{\bfseries C: USER anonymous}\\
+	S: 331 Please specify the password.\\
+	{\bfseries C: PASS test\_testerson@mail.ru}\\
+	S: 230 Login successful.\\
+	{\bfseries C: PASV}\\
+	S: 227 Entering Passive Mode (86, 57, 151, 3, 47, 76)\\
+	\% ip=86.57.151.3 port=47*256+76=12108\\
+	{\bfseries C: LIST}\\
+	\%\%\%\%\% Здесь устанавливается информационное соединение №1 \%\%\%\%\%\\
+	S: 150 Here comes the directory listing.\\
+	S: 226 Directory send OK.\\
+	{\bfseries C: PASV}\\
+	S: 227 Entering Passive Mode (86, 57, 151, 3, 191, 44)\\
+	{\bfseries C: RETR README}\\
+	\%\%\%\%\% Здесь устанавливается информационное соединение №2 \%\%\%\%\%\\
+	S: 150 Opening BINARY mode data connection for README (197 bytes).\\
+	S: 226 File send OK.\\
+	{\bfseries C: QUIT}\\
+	S: 221 Goodbye.\\
+
+\normalsize
+\end{frame}
+
+\begin{frame}{Пример: FTP}
+Информационное соединение №1:\\
+\medskip
+\scriptsize
+{\bfseries telnet ftp.mgts.by 12108}\\
+\begin{verbatim}
+-rw-r----r----    1 0    0       0 Apr 19  2010 2ban\_me.html\\
+-rw-r----r----    1 0    0       197 Jan 27  2010 README\\
+lrwxrwxrwx    1 0    0       18 Jan 27  2010 backports.org -> pub/backports.org/\\
+drwxr-xr-x    2 0    0       23 May 20  2010 blog\\
+drwxr-xr-x   10 0    0       4096 Feb 07 08:48 byfly\\
+\end{verbatim}
+\normalsize
+\end{frame}
+
+\begin{frame}{Пример: FTP}
+Информационное соединение №2:\\
+\medskip
+\scriptsize
+{\bfseries telnet ftp.mgts.by 48940}\\
+\begin{verbatim}
+Welcome to ByFly public archive (ftp.byfly.by)\\
+	located at MGTS,  Minsk,  Belarus\\
+	sponsored by Beltelecom (www.beltelecom.by)\\
+	2 x Intel(R) Xeon(R) CPU X3210  @ 2.13GHz\\
+	8 Gb RAM,  6 TB SATA Storage\\
+\end{verbatim}
+\normalsize
+\end{frame}
+
+
+\begin{frame}{}
+\Huge
+\begin{center}
+	Спасибо за внимание!
+	\bigskip
+	Вопросы?
+\end{center}
+\normalsize
+\end{frame}
+
+
+\end{document}
+%Конец файла
