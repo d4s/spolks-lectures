@@ -12,8 +12,25 @@
 
 \usepackage{verbatim}
 
-\usepackage{tikz}
-\usetikzlibrary{positioning,arrows}
+\usepackage{listingsutf8}
+\lstloadlanguages{C, make, bash}
+
+\lstset{escapechar=`,
+	language=C, 
+	tabsize=2, 
+	columns=fullflexible, 
+	basicstyle=\ttfamily, 
+	keywordstyle=\color{blue}, 
+	commentstyle=\itshape\color{brown},
+%	identifierstyle=\ttfamily, 
+	stringstyle=\mdseries\color{OliveGreen}, 
+	showstringspaces=false, 
+	numbers=left, 
+	numberstyle=\tiny, 
+	breaklines=true, 
+	inputencoding=utf8/latin1, 
+	morekeywords={u\_short, u\_char, u\_long, in\_addr}
+	}
 
 \title[СПОЛКС (http://goo.gl/32cTB)]{Системое программное обеспечение\\локальных компьютерных сетей}
 \author{Денис Пынькин}
