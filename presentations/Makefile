@@ -22,7 +22,7 @@
 #%.pdf: %.ps
 #	ps2pdf $<
 
-all: 01-intro.pdf 02-unixway.pdf 03-stack-tcp_ip.pdf
+all: 01-intro.pdf 02-unixway.pdf 03-stack-tcp_ip.pdf 04-stack-tcp_ip.pdf
 
 bib: main.aux
 	bibtex8 -s main.aux
