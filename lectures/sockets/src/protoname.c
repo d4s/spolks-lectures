@@ -17,17 +17,13 @@ int main (void) {
    printf ("Номер протокола: %d\n\n", pht->p_proto);
  }
 
- if ((pht = getprotobyname ("ipv6")) != NULL) {
+ if ((pht = getprotobyname ("ipv6")) != NULL)
    printf ("Номер протокола ipv6: %d\n\n", pht->p_proto);
- } else {
-   fprintf (stderr, "Протокол ip в базе не найден\n");
- }
+ else fprintf (stderr, "Протокол ip в базе не найден\n");
 
- if ((pht = getprotobyname ("IPV6")) != NULL) {
+ if ((pht = getprotobyname ("IPV6")) != NULL)
    printf ("Номер протокола IPV6: %d\n\n", pht->p_proto);
- } else {
-   fprintf (stderr, "Протокол IPV6 в базе не найден\n");
- }
+ else fprintf (stderr, "Протокол IPV6 в базе не найден\n");
 
  endprotoent ();
 

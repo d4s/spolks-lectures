@@ -1,34 +1,39 @@
 \documentclass[ignorenonframetext, hyperref={pdftex, unicode}]{beamer}
+
+\usepackage[russian]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
 \usepackage{beamerthemesplit}
 
 \usetheme{Pittsburgh}
 \usecolortheme{dolphin}
 
-\usepackage[russian]{babel}
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
 \usepackage{ulem}
 %\usepackage{html}
 
 \usepackage{verbatim}
 
-\usepackage{listingsutf8}
+\usepackage{ucs}
+\usepackage{listings}
 \lstloadlanguages{C, make, bash}
 
 \lstset{escapechar=`,
+	extendedchars=false,
 	language=C, 
 	tabsize=2, 
 	columns=fullflexible, 
-	basicstyle=\ttfamily, 
+%	basicstyle=\scriptsize,
 	keywordstyle=\color{blue}, 
 	commentstyle=\itshape\color{brown},
 %	identifierstyle=\ttfamily, 
-	stringstyle=\mdseries\color{OliveGreen}, 
+	stringstyle=\mdseries\color{green}, 
 	showstringspaces=false, 
 	numbers=left, 
 	numberstyle=\tiny, 
 	breaklines=true, 
-	inputencoding=utf8/latin1, 
+	inputencoding=utf8x,
+	keepspaces=true,
 	morekeywords={u\_short, u\_char, u\_long, in\_addr}
 	}
 
