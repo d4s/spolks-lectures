@@ -23,7 +23,7 @@
 #	ps2pdf $<
 
 all: 01-intro.pdf 02-unixway.pdf 03-stack-tcp_ip.pdf 04-stack-tcp_ip.pdf \
-	05-sockets.pdf 06-sockets.pdf 07-client_server.pdf
+	05-sockets.pdf 06-sockets.pdf 07-client_server.pdf 08-client_server.pdf
 
 bib: main.aux
 	bibtex8 -s main.aux
