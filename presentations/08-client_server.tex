@@ -386,6 +386,246 @@ int nfds;
 		\item мультисервисные серверы (суперсервер)
 	\end{itemize}
 \end{frame}
+
+\begin{frame}{preforked server}
+
+	\begin{itemize}
+		\item сервер с предварительным созданием дочерних процессов с параллельным вызовом accept
+		\item сервер с предварительным созданием дочерних процессов с блокировкой  для защиты accept
+		\item сервер с предварительным созданием дочерних процессов с использованием взаимного исключения для защиты  accept
+		\item сервер с предварительным созданием дочерних процессов с последующей передачей дескриптора сокета дочерним процессам
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{prethreaded server}
+
+	\begin{itemize}
+		\item сервер с предварительным созданием потоков с использованием взаимного исключения для защиты accept
+		\item сервер с предварительным созданием потоков,  главный поток вызывает accept
+	\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+{Пример сервера с предварительным созданием процессов с параллельным вызовом {\tt accept}}
+	\tiny\lstinputlisting[linerange={1-12}]{../lectures/clientserver/src/preforked_server.c}
+\end{frame}
+
+
+\begin{frame}[fragile]
+	\tiny\lstinputlisting[linerange=55-89,firstnumber=54]{../lectures/clientserver/src/preforked_server.c}
+\end{frame}
+\begin{frame}[fragile]
+	\tiny\lstinputlisting[linerange=90-150,firstnumber=89]{../lectures/clientserver/src/preforked_server.c}
+\end{frame}
+
+\begin{frame}[fragile]
+{Пример скрипта для теста сервера}
+	\scriptsize\lstinputlisting[language=bash]{../lectures/clientserver/src/test_server.sh}
+\end{frame}
+
+\begin{frame}[fragile]
+{Вывод}
+	\scriptsize
+	\begin{verbatim}
+Server [0]: Wed,  20 Oct 2010 12:39:37 +0300
+Server [4]: Wed,  20 Oct 2010 12:39:37 +0300
+Server [3]: Wed,  20 Oct 2010 12:39:37 +0300
+Server [5]: Wed,  20 Oct 2010 12:39:37 +0300
+Server [6]: Wed,  20 Oct 2010 12:39:37 +0300
+Server [7]: Wed,  20 Oct 2010 12:39:37 +0300
+Server [8]: Wed,  20 Oct 2010 12:39:38 +0300
+Server [2]: Wed,  20 Oct 2010 12:39:38 +0300
+Server [9]: Wed,  20 Oct 2010 12:39:38 +0300
+Server [10]: Wed,  20 Oct 2010 12:39:38 +0300
+Server [1]: Wed,  20 Oct 2010 12:39:38 +0300
+	\end{verbatim}
+\end{frame}
+
+
+\begin{frame}[fragile]
+{Пример UDP сервера с предварительным созданием процессов}
+	\tiny\lstinputlisting[language=diff]{../lectures/clientserver/src/preforked_server_udp.diff}
+\end{frame}
+
+
+\begin{frame}[fragile]
+{Пример скрипта для теста UDP сервера}
+	\scriptsize\lstinputlisting[language=bash]{../lectures/clientserver/src/test_server_udp.sh}
+\end{frame}
+
+\begin{frame}[fragile]
+{Вывод}
+	\scriptsize
+	\begin{verbatim}
+Server [0]: Wed,  20 Oct 2010 12:41:03 +0300
+Server [2]: Wed,  20 Oct 2010 12:41:04 +0300
+Server [3]: Wed,  20 Oct 2010 12:41:05 +0300
+Server [4]: Wed,  20 Oct 2010 12:41:06 +0300
+Server [5]: Wed,  20 Oct 2010 12:41:07 +0300
+Server [6]: Wed,  20 Oct 2010 12:41:08 +0300
+Server [7]: Wed,  20 Oct 2010 12:41:09 +0300
+Server [8]: Wed,  20 Oct 2010 12:41:10 +0300
+Server [9]: Wed,  20 Oct 2010 12:41:11 +0300
+Server [1]: Wed,  20 Oct 2010 12:41:12 +0300
+Server [10]: Wed,  20 Oct 2010 12:41:13 +0300
+	\end{verbatim}
+\end{frame}
+
+
+\begin{frame}[fragile]
+{Пример сервера с предварительным созданием дочерних процессов с последующей передачей дескриптора сокета дочерним процессам}
+	\tiny\lstinputlisting[linerange={1-20}]{../lectures/clientserver/src/preforked_server_pipe.c}
+\end{frame}
+
+
+\begin{frame}[fragile]
+	\tiny\lstinputlisting[linerange=64-73,firstnumber=63]{../lectures/clientserver/src/preforked_server_pipe.c}
+\end{frame}
+
+\begin{frame}[fragile]
+	\tiny\lstinputlisting[linerange=75-110,firstnumber=last]{../lectures/clientserver/src/preforked_server_pipe.c}
+\end{frame}
+
+\begin{frame}[fragile]
+	\tiny\lstinputlisting[linerange=113-148,firstnumber=last]{../lectures/clientserver/src/preforked_server_pipe.c}
+\end{frame}
+
+\begin{frame}[fragile]
+	\tiny\lstinputlisting[linerange=150-185,firstnumber=last]{../lectures/clientserver/src/preforked_server_pipe.c}
+\end{frame}
+
+\begin{frame}[fragile]
+	\tiny\lstinputlisting[linerange=186-218,firstnumber=last]{../lectures/clientserver/src/preforked_server_pipe.c}
+\end{frame}
+
+\begin{frame}[fragile]
+	\tiny\lstinputlisting[linerange=221-247,firstnumber=last]{../lectures/clientserver/src/preforked_server_pipe.c}
+\end{frame}
+
+\begin{frame}[fragile]
+	\tiny\lstinputlisting[linerange=248-266,firstnumber=last]{../lectures/clientserver/src/preforked_server_pipe.c}
+\end{frame}
+
+\begin{frame}[fragile]
+{Вывод}
+	\scriptsize
+	\begin{verbatim}
+Server [1]: Mon,  24 Oct 2011 13:16:52 +0300
+Server [2]: Mon,  24 Oct 2011 13:16:52 +0300
+Server [3]: Mon,  24 Oct 2011 13:16:52 +0300
+Server [4]: Mon,  24 Oct 2011 13:16:52 +0300
+Server [5]: Mon,  24 Oct 2011 13:16:52 +0300
+Server [6]: Mon,  24 Oct 2011 13:16:52 +0300
+Server [7]: Mon,  24 Oct 2011 13:16:52 +0300
+Server [8]: Mon,  24 Oct 2011 13:16:52 +0300
+Server [9]: Mon,  24 Oct 2011 13:16:52 +0300
+Server [10]: Mon,  24 Oct 2011 13:16:52 +0300
+Server [2]: Mon,  24 Oct 2011 13:16:55 +0300
+Server [1]: Mon,  24 Oct 2011 13:16:55 +0300
+Server [3]: Mon,  24 Oct 2011 13:16:55 +0300
+Server [4]: Mon,  24 Oct 2011 13:16:55 +0300
+Server [5]: Mon,  24 Oct 2011 13:16:55 +0300
+Server [6]: Mon,  24 Oct 2011 13:16:55 +0300
+Server [7]: Mon,  24 Oct 2011 13:16:55 +0300
+Server [8]: Mon,  24 Oct 2011 13:16:55 +0300
+Server [10]: Mon,  24 Oct 2011 13:16:55 +0300
+Server [2]: Mon,  24 Oct 2011 13:16:58 +0300
+	\end{verbatim}
+\end{frame}
+
+
+\begin{frame}{Сервер с предварительным созданием процессов с блокировкой вызова {\tt accept}}
+
+	\begin{itemize}
+		\item С помощью файла
+		\item С помощью взаимного исключения (Семафор,  мьютекс,  критические секции windows)
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Мультисервисные серверы}
+
+Синоним <<Суперсервер>>
+
+Используется не отдельный сервер, а "враппер" для сервисов.
+	\begin{itemize}
+		\item уменьшение надежности
+		\item ограничения по количеству открытых сокетов
+		\item потребляет меньше ресурсов
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Мультисервисный сервер без установления соединения}
+	\begin{enumerate}
+		\item Сервер открывает набор сокетов UDP и привязывает к портам служб.
+		\item Используется таблица соответствия сокетов службам
+		\item с помощью select сервер переводится в состояние ожидания дейтаграммы
+		\item для обработки каждой отдельной дейтаграммы вызывается соответствующая функция
+	\end{enumerate}
+\end{frame}
+
+\begin{frame}{Мультисервисный сервер с установлением соединения}
+	\begin{enumerate}
+		\item Сервер открывает набор сокетов TCP и привязывает к портам служб.
+		\item Используется таблица соответствия сокетов службам
+		\item с помощью select сокеты переводится в состояние ожидания нового соединения
+		\item Если готов один из первоначальных сокетов,  то создаем новый сокет.
+		\item Для обработки каждого соединения вызывается соответствующая функция
+	\end{enumerate}
+\end{frame}
+
+\begin{frame}{Модульный мультисервисный сервер с устанавлением соединения}
+	\begin{enumerate}
+		\item Сервер открывает набор сокетов TCP и привязывает их к портам служб.
+		\item Используется таблица соответствия сокетов службам
+		\item с помощью select сокеты переводится в состояние ожидания нового соединения
+		\item После поступления запроса вызываем fork для создания ведомого процесса
+		\item ведомый процесс закрывает все ненужные сокеты
+		\item ведомый процесс производит замещение процесса с помощью вызова из семейства exec
+	\end{enumerate}
+\end{frame}
+
+\begin{frame}[fragile]{Работа через initd/xinitd}
+	\scriptsize	
+\begin{lstlisting}[Language=C]
+/* Если работаем с помощью xinetd, 
+то перенаправляем stdout и stderr в сокет) */
+if( xinetd) 
+{ 
+  close( stdout); 
+  close( stderr); 
+  if ( dup2( 0,  1) == -1) return 1; 
+  if ( dup2( 0,  2) == -1) return 1; 
+} 
+\end{lstlisting}
+	\normalsize
+\end{frame}
+
+\begin{frame}[fragile]{Общие рекомендации по работе сервера}
+	\scriptsize
+	\begin{itemize}
+		\item Функционирование в фоновом режиме:\\
+			с помощью fork запускаем копию программы, а родительский процесс убивается. При этом должны закрываться все унаследованные дескрипторы файлов.
+		\item Сервер должен отключать управляющий терминал,  чтобы не получать от него сигналы:\\
+			\begin{verbatim}
+fd=open(“/dev/tty”,  O_RDWR);
+ioctl( fd,  TIOCNOTTY,  0);
+close( fd);
+			\end{verbatim}
+		\item Сервер должен переходить в безопасный каталог используя {\tt chdir}
+		\item Необходимо изменить маску по умолчанию для создания файлов используя {\tt umask( 027)}
+		\item Необходимо открыть стандартные дескрипторы для корректной работы библиотечных процедур:\\
+				\begin{verbatim}
+fd=open(“/dev/null”,  O_RDWR); //ввод
+dup( fd); //вывод
+dup( fd); //ошибки
+			\end{verbatim}
+		\item Сервер должен предотвращать запуск нескольких копий (лок-файлы или др. системные функции)
+		\item Желательно игнорировать сигналы,  не относящиеся к работе сервера
+		\item Если есть возможность,  то желательно использовать системные методы ведения журнала событий
+	\end{itemize}
+\end{frame}
+
 \mode<all>{\input{lastpage}}
 
 \end{document}

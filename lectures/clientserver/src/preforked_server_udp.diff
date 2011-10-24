@@ -1,0 +1,38 @@
+--- preforked_server.c	2011-10-24 11:55:18.255762085 +0300
++++ preforked_server_udp.c	2010-10-20 12:26:02.000000000 +0300
+@@ -58,7 +58,7 @@
+ 
+ char * host = "0.0.0.0";
+ char * service = "2525";
+-char * proto = "tcp";
++char * proto = "udp";
+ //char * proto = "sctp";
+ struct sockaddr_in sin, remote;
+ struct tm *tp;
+@@ -104,23 +104,17 @@
+ 		}
+ 	}
+ 
+-    if ( listen( sd, 0) == -1)
+-    {
+-	perror( "Ошибка при переводе сокета в пассивный режим");
+-        return 1;
+-	}
+ 
++    rlen = sizeof( remote);
+     while(1)
+     {
+-		rlen = sizeof( remote);
+-		rsd = accept( sd, (struct sockaddr *)&remote, &rlen);
++		recvfrom( sd, buf, 512, 0, (struct sockaddr *)&remote, &rlen);
+ 		fprintf( stderr, "Process %d accepted connection\n", pid);
+ 		t = time( NULL);
+ 		tp = localtime( &t);
+ 		strftime( t_str, 512, "%a, %d %b %Y %T %z", tp);
+ 		snprintf( buf, 512, "Server [%d]: %s\n", pid, t_str );
+-		send(rsd, buf, strlen(buf), 0);
+-		close( rsd);
++		sendto( sd, buf, strlen(buf), 0, (struct sockaddr *)&remote, rlen);
+     }
+ 
+     return 0;
