@@ -8,3 +8,7 @@
 *.toc
 *.swp
 *.vrb
+*.nav
+*.snm
+*.dvi
+*.pdf
