@@ -11,6 +11,7 @@ int main (void) {
 	    perror ("GETADDRINFO");
 	    printf ("GETADDRINFO: %s\n", gai_strerror(res));
 	} else {
+	    struct addrinfo *first_addr = addr_res;
     	    printf ("Результаты для сервиса http\n"); 
 	    /* Пройдем по списку возвращенных структур */
     	    do {
@@ -19,7 +20,11 @@ int main (void) {
 		    inet_ntoa (((struct sockaddr_in *) addr_res->ai_addr)->sin_addr));
 		printf ("Официальное имя хоста: %s\n", addr_res->ai_canonname);
 	    } while ((addr_res = addr_res->ai_next) != NULL);
+	    /* очистим память, выделенную под структуры */
+	    freeaddrinfo (addr_res);
 	}
+
+    
 
     return 0;
 }
