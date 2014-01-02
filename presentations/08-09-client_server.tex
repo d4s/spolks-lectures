@@ -592,10 +592,10 @@ Server [2]: Mon,  24 Oct 2011 13:16:58 +0300
 то перенаправляем stdout и stderr в сокет) */
 if( xinetd) 
 { 
-  close( stdout); 
-  close( stderr); 
-  if ( dup2( 0,  1) == -1) return 1; 
-  if ( dup2( 0,  2) == -1) return 1; 
+  close( STDOUT_FILENO); 
+  close( STDERR_FILENO); 
+  if ( dup2( STDIN_FILENO, STDOUT_FILENO) == -1) return 1;
+  if ( dup2( STDIN_FILENO, STDERR_FILENO) == -1) return 1;
 } 
 \end{lstlisting}
 	\normalsize
