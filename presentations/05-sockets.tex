@@ -67,7 +67,7 @@
 
 \begin{frame}{}
 Проектировщики из BSD предусмотрели возможность применения различных семейств протоколов связи,  далеко выходящую за рамки протоколов TCP/IP. \\
-Среди них протоколы TCP/IP представлены единственным семейством PF\_INET. Они также предусмотрели,  
+Среди них протоколы TCP/IP представлены единственным семейством AF\_INET. Они также предусмотрели,  
 чтобы в приложениях необходимые операции связи определялись путем указания на тип требуемой службы,
 а не выбора имени протокола. {\itshape Поэтому вместо указания на то,  что ему требуется соединение TCP,
 приложение запрашивает службу типа потоковой передачи семейства протоколов Интернет}.\\
@@ -154,6 +154,27 @@ struct sockaddr{
 	\item AF\_INET -- Адресное семейство, поддерживающее взаимодействие по протоколам IPv4.
 	\item AF\_INET6 -- Взаимодействие по протоколам IPv6 (необязательная возможность).
 \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Семейства адресов: socket.h}
+\begin{lstlisting}[language=C]
+/* Supported address families. */
+#define AF_UNSPEC	0
+#define AF_UNIX		1	/* Unix domain sockets 		*/
+#define AF_LOCAL	1	/* POSIX name for AF_UNIX	*/
+#define AF_INET		2	/* Internet IP Protocol 	*/
+#define AF_AX25		3	/* Amateur Radio AX.25 		*/
+#define AF_IPX		4	/* Novell IPX 			*/
+#define AF_APPLETALK	5	/* AppleTalk DDP 		*/
+#define AF_NETROM	6	/* Amateur Radio NET/ROM 	*/
+#define AF_BRIDGE	7	/* Multiprotocol bridge 	*/
+#define AF_ATMPVC	8	/* ATM PVCs			*/
+#define AF_X25		9	/* Reserved for X.25 project 	*/
+#define AF_INET6	10	/* IP version 6			*/
+...
+#define AF_MAX		39	/* For now.. */
+
+\end{lstlisting}
 \end{frame}
 
 \begin{frame}[fragile]{Структура данных для AF\_INET}
