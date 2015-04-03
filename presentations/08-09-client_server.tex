@@ -592,10 +592,8 @@ Server [2]: Mon,  24 Oct 2011 13:16:58 +0300
 то перенаправляем stdout и stderr в сокет) */
 if( xinetd) 
 { 
-  close( stdout); 
-  close( stderr); 
-  if ( dup2( 0,  1) == -1) return 1; 
-  if ( dup2( 0,  2) == -1) return 1; 
+  if ( dup2( STDIN_FILENO, STDOUT_FILENO) == -1) return 1;
+  if ( dup2( STDIN_FILENO, STDERR_FILENO) == -1) return 1;
 } 
 \end{lstlisting}
 	\normalsize
@@ -616,6 +614,9 @@ close( fd);
 		\item Необходимо изменить маску по умолчанию для создания файлов используя {\tt umask( 027)}
 		\item Необходимо открыть стандартные дескрипторы для корректной работы библиотечных процедур:\\
 				\begin{verbatim}
+				close(STDIN_FILENO);
+				close(STDOUT_FILENO);
+				close(STDERR_FILENO);
 fd=open(“/dev/null”,  O_RDWR); //ввод
 dup( fd); //вывод
 dup( fd); //ошибки

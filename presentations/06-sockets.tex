@@ -2,7 +2,7 @@
 % Пынькин Д.А. (с) 2011
 \input{common}
 
-\subtitle{Программный интерфейс взаимодействия сокетов Беркли\\(проолжение)}
+\subtitle{Программный интерфейс взаимодействия сокетов Беркли\\(продолжение)}
 
 \begin{document}
 
@@ -176,7 +176,7 @@ int connect(int sockfd, const struct sockaddr *serv_addr, socklen_t addrlen);
 
 \begin{frame}[fragile]{send}
 
-{\tt send, sento, sendmsg} -- отправить сообщение в сокет 
+{\tt send, sendto, sendmsg} -- отправить сообщение в сокет 
 \scriptsize\begin{lstlisting}[language=C]
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -208,11 +208,11 @@ int recvfrom(int s, void *buf, size_t len, int flags,
 
 \begin{frame}{Флаги}
 	\begin{itemize}
-	\item MSG\_OOB -- Запрашиваются экстренные данные. Трактовка этого понятия зависит от протокола.
+	\item MSG\_OOB -- запрашиваются экстренные данные. Трактовка этого понятия зависит от протокола.
 	\item MSG\_DONTROUTE (send) -- не использовать  маршрутизацию  при  отправке пакета
 	\item MSG\_DONTWAIT (send) -- включает неблокирующий режим
-	\item MSG\_TRUNC (recv) -- Возвращает реальную длину пакета (пакетные протоколы) 
-	\item MSG\_PEEK (recv) -- Не удалять прочитанные данные.
+	\item MSG\_TRUNC (recv) -- возвращает реальную длину пакета (пакетные протоколы) 
+	\item MSG\_PEEK (recv) -- не удалять прочитанные данные.
 	\item MSG\_WAITALL (recv) -- для сокетов типа SOCK\_STREAM флаг означает,  что вызывающий процесс блокируется до получения всего запрошенного объема данных.
 	\end{itemize}
 \end{frame}
