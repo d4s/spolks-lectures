@@ -1,0 +1,288 @@
+% СПО ЛКС  
+% Пынькин Д.А. (с) 2013
+\input{common}
+
+\subtitle{Multicast}
+
+\begin{document}
+
+\mode<all>{\input{titlepage}}
+
+%
+% Далее начинается сама презентация
+%
+
+\begin{frame}{Multicast}
+
+	\begin{block}{Широковещательный режим IP}
+		\begin{itemize}
+			\item one-to-many
+			\item many-to-many
+			\item realtime
+			\item receiver driven
+		\end{itemize}
+	\end{block}
+
+	\center\includegraphics[height=0.4\textheight]{800px-Multicast.png}
+
+	Dave Clark: ``You put packets in at one end,  and the network conspires to deliver them to anyone who asks.``
+
+\end{frame}
+
+\begin{frame}{Multicast}
+
+	Дейтаграмму многоадресной передачи должны получать только заинтересованные в ней интерфейсы. 
+	
+	Точнее приложения, которые используют эти интерфейсы и желают принять участие в сеансе многоадресной передачи данных.
+
+\end{frame}
+
+\begin{frame}{Маршрутизация}
+
+	Маршрутизаторы общаются между собой при помощи какого-либо протокола маршрутизации многоадресной передачи
+	(например DVMRP).
+
+
+	\center\includegraphics[height=0.4\textheight]{IGMP_basic_architecture.png}
+	
+	Когда узел присоединяется к группе,  он отправляет всем маршрутизаторам в своей сети 
+	сообщение IGMP (IPv4) или MLD (IPv6).
+
+\end{frame}
+
+
+\begin{frame}{IPv4 multicast}
+
+	Используются адреса класса D:\\
+	{\bf 224.0.0.0 -- 239.255.255.255}
+	\center\includegraphics[height=0.4\textheight]{multicastgroups.png}
+
+	\bigskip
+
+	Младшие 28 бит -- идентификатор группы многоадресной передачи (multicast group ID)
+
+\end{frame}
+
+\begin{frame}{Специальные адреса IPv4}
+
+	\begin{block}{224.0.0.1}
+
+		группа всех узлов (all-hosts group)
+	\end{block}
+
+К этой группе должны присоединиться все узлы в сети,  имеющие возможность многоадресной передачи.
+\end{frame}
+
+\begin{frame}{Специальные адреса IPv4}
+
+	\begin{block}{224.0.0.2}
+		группа всех маршрутизаторов (all-routers group)
+	\end{block}
+
+	К этой группе должны присоединиться все маршрутизаторы сети,  поддерживающие многоадресную передачу.
+	
+\end{frame}
+
+\begin{frame}{Специальные адреса IPv4}
+
+	\begin{block}{224.0.0.0--224.0.0.255}
+		Локальные адреса на канальном уровне (link local)
+	\end{block}
+
+	Предназначены для низкоуровневого определения топологии и служебных протоколов.
+	\bigskip
+
+	Дейтаграммы с такими адресами никогда не передаются маршрутизатором дальше.
+
+\end{frame}
+
+
+\begin{frame}{Ограничение области действия}
+
+	Исторически сложилось,  что поле TTL в IPv4 выполняло роль поля области действия многоадресной передачи:
+
+	\begin{itemize}
+		\item 0: локальный в пределах узла
+		\item 1: локальный в пределах сети
+		\item \textless 32: локальный в пределах сайта
+		\item \textless 64: локальный в пределах региона
+		\item \textless 128: локальный в пределах континента
+		\item \textless 255: глобальный
+	\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Ограничение области действия}
+
+	Более предпочтительно использовать административное управление областями действия
+
+	\begin{block}{239.0.0.0--239.255.255.255}
+		пространство адресов с административным ограничением областью действия
+	\end{block}
+
+	\begin{itemize}
+		\item 239.255.0.0--239.255.255.255: локальная область действия (site-local)
+		\item 239.192.0.0--239.195.255.255: локальная область действия в пределах организации
+	\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Multicast IPv6 Address}
+
+	\center\includegraphics[width=1\textwidth]{multicast_addr_ipv6.png}
+
+
+
+\end{frame}
+
+\begin{frame}{Специальные адреса IPv6}
+	\begin{block}{FF02::1}
+		группа всех узлов (all-nodes group)
+	\end{block}
+
+	К этой группе должны присоединиться все узлы в сети,  имеющие возможность многоадресной передачи
+	(включая маршрутизаторы,  принтеры,  тостеры и холодильники,  если они имеют IPv6 адрес).
+
+	\bigskip
+
+	В отличие от IPv4 присоединение является обязательным!
+\end{frame}
+
+\begin{frame}{Специальные адреса IPv6}
+	\begin{block}{FF02::2}
+		группа всех маршрутизаторов (all-routers group)
+	\end{block}
+
+	К этой группе должны присоединиться все маршрутизаторы сети,  поддерживающие многоадресную передачу.
+
+	Аналогичен адресу 224.0.0.2.
+
+\end{frame}
+
+
+\begin{frame}{Область действия: scope}
+	\begin{itemize}
+			\item 1: Node-local – локальная в пределах узла
+			\item 12: Link-local – локальная в пределах физической сети
+			\item 14: Admin-local – локальная в пределах области администрирования
+			\item 15: Site-local – локальная в пределах сайта
+			\item 18: Organization-local – локальная в пределах организации
+			\item 114: глобальная
+	\end{itemize}
+	
+	4, 5, 8 определяются администратором
+
+\end{frame}
+
+
+\begin{frame}{Сеансы многоадресной передачи}
+
+	Сочетание адреса многоадресной передачи и порта транспортного уровня часто называют сеансом (session).
+	\bigskip
+
+	 Пример:\\
+	 потоковое мультимедиа делится на 2 сеанса -- аудио и видео. 
+	 При этом иногда выгодно использовать не только разные порты,  но и разные группы.
+\end{frame}
+
+
+\begin{frame}{Multicast и канальный уровень}
+
+	Современные сетевые карты умеют принимать кадры с установленным битом режима многоадресной передачи.
+	\bigskip
+	Для беспроводных сетей 802.11,  передача кадра может задержаться в зависимости от
+	режима сохранения энергии (power-save mode).
+
+\end{frame}
+
+
+
+\begin{frame}{Multicast: Ethernet \& IPv4}
+	
+	\center\includegraphics[width=1\textwidth]{multicast_ethernet.png}
+
+	Используется универсально управляемый адрес Ethernet.
+
+\end{frame}
+
+
+\begin{frame}{Multicast: Ethernet \& IPv6}
+
+	\center\includegraphics[width=1\textwidth]{multicast_ethernet_ipv6.png}
+
+	Используется локально управляемый групповой адрес Ethernet.
+\end{frame}
+
+
+\begin{frame}{Multicast: программирование}
+	Управление режимом,  присоединение к группам,  отсоединение и др. 
+	осуществляется через вызовы {\bf getsockopt} и {\bf setsockopt}.
+\end{frame}
+
+
+\begin{frame}[fragile]{Multicast: структуры}
+	\begin{block}{ip\_mreq}
+		\begin{lstlisting}
+struct ip_mreq{
+	// адрес многоадресной передачи
+	struct in_addr imr_multiaddr;
+	// адрес интерфейса
+	struct in_addr imr_interface;
+}
+		\end{lstlisting}
+	\end{block}
+	\begin{block}{ipv6\_mreq}
+		\begin{lstlisting}
+struct ipv6_mreq{
+	// адрес многоадресной передачи
+	struct in6_addr imr_multiaddr;
+	// индекс интерфейса
+	unsigned int ipv6mr_interface;
+}
+		\end{lstlisting}
+	\end{block}
+	
+\end{frame}
+
+\begin{frame}[fragile]{Multicast: структуры}
+	\begin{block}{group\_req}
+		\begin{lstlisting}
+struct group_req{
+	// индекс интерфейса
+	unsigned int gr_interface;
+	// адрес многоадресной передачи ipv4 или ipv6
+	struct sockaddr_storage gr_group;
+}
+		\end{lstlisting}
+	\end{block}
+	
+\end{frame}
+
+
+\begin{frame}{Multicast}
+
+\end{frame}
+
+\begin{frame}{Multicast}
+
+\end{frame}
+
+\begin{frame}{Multicast}
+
+\end{frame}
+
+\begin{frame}{Multicast}
+
+\end{frame}
+
+\begin{frame}{Multicast}
+
+\end{frame}
+
+
+
+
+\mode<all>{\input{lastpage}}
+
+\end{document}
+%Конец файла
